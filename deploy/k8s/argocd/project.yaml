@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: muse-spark
+  namespace: argocd
+spec:
+  description: Muse Spark website managed from the muse-spark repository
+  sourceRepos:
+    - https://github.com/gateszhangc/muse-spark.git
+  destinations:
+    - namespace: muse-spark
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
