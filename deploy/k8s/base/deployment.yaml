@@ -28,7 +28,7 @@ spec:
         - name: dokploy-fleet-ghcr
       containers:
         - name: web
-          image: registry.144.91.77.245.sslip.io/muse-spark:latest
+          image: ghcr.io/gateszhangc/muse-spark:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

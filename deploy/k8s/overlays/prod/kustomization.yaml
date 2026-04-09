@@ -8,8 +8,8 @@ resources:
   - registry-secret.yaml
 
 images:
-  - name: registry.144.91.77.245.sslip.io/muse-spark
-    newName: registry.144.91.77.245.sslip.io/muse-spark
+  - name: ghcr.io/gateszhangc/muse-spark
+    newName: ghcr.io/gateszhangc/muse-spark
     newTag: latest
 
 labels:

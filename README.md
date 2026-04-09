@@ -21,11 +21,11 @@ pnpm test:e2e
 
 - GitHub repository: `gateszhangc/muse-spark`
 - Git branch: `main`
-- Image repository: `registry.144.91.77.245.sslip.io/muse-spark`
+- Image repository: `ghcr.io/gateszhangc/muse-spark`
 - K8s manifest path: `deploy/k8s/overlays/prod`
 - Argo CD application: `muse-spark`
 - Primary domain: `muse-spark.lol`
 
 Release path:
 
-`gateszhangc/muse-spark -> main -> registry.144.91.77.245.sslip.io/muse-spark -> deploy/k8s/overlays/prod -> muse-spark`
+`gateszhangc/muse-spark -> main -> ghcr.io/gateszhangc/muse-spark -> deploy/k8s/overlays/prod -> muse-spark`

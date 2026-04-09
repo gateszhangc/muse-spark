@@ -8,49 +8,15 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 concurrency:
   group: muse-spark-release
   cancel-in-progress: true
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      should_release: ${{ steps.flags.outputs.should_release }}
-      registry_ready: ${{ steps.flags.outputs.registry_ready }}
-    steps:
-      - name: Derive release flags
-        id: flags
-        env:
-          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || ! printf '%s' "$HEAD_COMMIT_MESSAGE" | grep -Fq '[skip ci]'; then
-            echo "should_release=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_release=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          if [ -n "$REGISTRY_USERNAME" ] && [ -n "$REGISTRY_PASSWORD" ]; then
-            echo "registry_ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "registry_ready=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  release-skipped:
-    needs: prepare
-    if: needs.prepare.outputs.should_release == 'true' && needs.prepare.outputs.registry_ready != 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Explain skipped release
-        run: |
-          echo "Release jobs skipped because REGISTRY_USERNAME / REGISTRY_PASSWORD are not configured."
-
   build-and-push:
-    needs: prepare
-    if: needs.prepare.outputs.should_release == 'true' && needs.prepare.outputs.registry_ready == 'true'
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
@@ -68,9 +34,9 @@ jobs:
       - name: Log in to registry
         uses: docker/login-action@v3
         with:
-          registry: registry.144.91.77.245.sslip.io
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push image
         uses: docker/build-push-action@v6
@@ -78,7 +44,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.144.91.77.245.sslip.io/muse-spark:${{ steps.meta.outputs.image_tag }}
+          tags: ghcr.io/gateszhangc/muse-spark:${{ steps.meta.outputs.image_tag }}
           build-args: |
             NEXT_PUBLIC_SITE_URL=https://muse-spark.lol
             NEXT_PUBLIC_CLARITY_PROJECT_ID=w914vw15aa
@@ -86,10 +52,8 @@ jobs:
             NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=${{ secrets.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
 
   update-gitops-tag:
-    needs:
-      - prepare
-      - build-and-push
-    if: needs.prepare.outputs.should_release == 'true' && needs.prepare.outputs.registry_ready == 'true'
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
