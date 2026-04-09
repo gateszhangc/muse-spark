@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build-and-push:
-    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')
+    if: (github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')) && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != ''
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
@@ -51,7 +51,7 @@ jobs:
             NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=${{ secrets.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
 
   update-gitops-tag:
-    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')
+    if: (github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')) && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != ''
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
