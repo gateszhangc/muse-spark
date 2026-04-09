@@ -14,6 +14,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  release-skipped:
+    if: (github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')) && (secrets.REGISTRY_USERNAME == '' || secrets.REGISTRY_PASSWORD == '')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain skipped release
+        run: |
+          echo "Release jobs skipped because REGISTRY_USERNAME / REGISTRY_PASSWORD are not configured."
+
   build-and-push:
     if: (github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')) && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != ''
     runs-on: ubuntu-latest
