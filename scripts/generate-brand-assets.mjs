@@ -6,6 +6,11 @@ const root = process.cwd();
 const outputDir = path.join(root, "public", "brand");
 const appDir = path.join(root, "app");
 
+if (process.env.SKIP_BRAND_ASSETS === "1") {
+  console.log("Skipping Muse Spark brand asset generation.");
+  process.exit(0);
+}
+
 mkdirSync(outputDir, { recursive: true });
 mkdirSync(appDir, { recursive: true });
 
