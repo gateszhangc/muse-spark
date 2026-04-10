@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
@@ -11,6 +11,19 @@ mkdirSync(appDir, { recursive: true });
 
 const displayFontStack = "'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif";
 const monoFontStack = "'SFMono-Regular', 'Cascadia Mono', 'Menlo', monospace";
+
+function imageMagickBinary() {
+  for (const candidate of ["magick", "convert"]) {
+    const result = spawnSync(candidate, ["-version"], { stdio: "ignore" });
+    if (!result.error && result.status === 0) {
+      return candidate;
+    }
+  }
+
+  throw new Error("ImageMagick is required. Install either `magick` or `convert`.");
+}
+
+const imageTool = imageMagickBinary();
 
 const markSvg = `
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -72,24 +85,24 @@ const logoPngPath = path.join(outputDir, "muse-spark-logo.png");
 writeFileSync(markSvgPath, markSvg.trim());
 writeFileSync(logoSvgPath, logoSvg.trim());
 
-execFileSync("magick", [markSvgPath, "-resize", "1024x1024", markPngPath], {
+execFileSync(imageTool, [markSvgPath, "-resize", "1024x1024", markPngPath], {
   stdio: "inherit",
 });
 
-execFileSync("magick", [logoSvgPath, "-resize", "1400x455", logoPngPath], {
+execFileSync(imageTool, [logoSvgPath, "-resize", "1400x455", logoPngPath], {
   stdio: "inherit",
 });
 
-execFileSync("magick", [markPngPath, "-resize", "512x512", path.join(appDir, "icon.png")], {
+execFileSync(imageTool, [markPngPath, "-resize", "512x512", path.join(appDir, "icon.png")], {
   stdio: "inherit",
 });
 
-execFileSync("magick", [markPngPath, "-resize", "180x180", path.join(appDir, "apple-icon.png")], {
+execFileSync(imageTool, [markPngPath, "-resize", "180x180", path.join(appDir, "apple-icon.png")], {
   stdio: "inherit",
 });
 
 execFileSync(
-  "magick",
+  imageTool,
   [markPngPath, "-define", "icon:auto-resize=256,128,64,48,32,16", path.join(appDir, "favicon.ico")],
   { stdio: "inherit" }
 );
