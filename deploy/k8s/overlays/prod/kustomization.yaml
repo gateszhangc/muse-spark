@@ -10,7 +10,7 @@ resources:
 images:
   - name: ghcr.io/gateszhangc/muse-spark
     newName: ghcr.io/gateszhangc/muse-spark
-    newTag: 979d0d849f8bcfc7225b9622559e3eb87ef9c137
+    newTag: b3f5da8bcac14d377078f5d671b5e888a16f4ae2
 
 labels:
   - includeSelectors: true
