@@ -72,7 +72,15 @@ jobs:
 
           path = Path("deploy/k8s/overlays/prod/kustomization.yaml")
           content = path.read_text()
-          updated = re.sub(r"(newTag:\s*)([^\n]+)", rf"\1{os.environ['IMAGE_TAG']}", content)
+          updated, count = re.subn(
+              r"(^\s*newTag:\s*).*$",
+              lambda match: f"{match.group(1)}{os.environ['IMAGE_TAG']}",
+              content,
+              count=1,
+              flags=re.MULTILINE,
+          )
+          if count != 1:
+              raise SystemExit("expected a single newTag entry in kustomization.yaml")
           path.write_text(updated)
           PY
 
