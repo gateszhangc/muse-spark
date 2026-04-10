@@ -4,7 +4,7 @@ test.describe("Muse Spark SEO routes", () => {
   test("renders canonical metadata and structured data on the homepage", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     await expect(page.locator("link[rel='canonical']")).toHaveAttribute(
       "href",

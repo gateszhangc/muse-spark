@@ -1,50 +1,20 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const fontRoot = "/Users/a1-6/.codex/skills/canvas-design/canvas-fonts";
 const outputDir = path.join(root, "public", "brand");
 const appDir = path.join(root, "app");
 
 mkdirSync(outputDir, { recursive: true });
 mkdirSync(appDir, { recursive: true });
 
-function fontData(file) {
-  return readFileSync(path.join(fontRoot, file)).toString("base64");
-}
-
-const displayFont = fontData("BricolageGrotesque-Bold.ttf");
-const sansFont = fontData("InstrumentSans-Regular.ttf");
-const monoFont = fontData("IBMPlexMono-Regular.ttf");
-
-const fontStyle = `
-  <style>
-    @font-face {
-      font-family: 'BrandDisplay';
-      src: url(data:font/ttf;base64,${displayFont}) format('truetype');
-      font-weight: 700;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'BrandSans';
-      src: url(data:font/ttf;base64,${sansFont}) format('truetype');
-      font-weight: 400;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'BrandMono';
-      src: url(data:font/ttf;base64,${monoFont}) format('truetype');
-      font-weight: 400;
-      font-style: normal;
-    }
-  </style>
-`;
+const displayFontStack = "'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif";
+const monoFontStack = "'SFMono-Regular', 'Cascadia Mono', 'Menlo', monospace";
 
 const markSvg = `
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    ${fontStyle}
     <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(365 265) rotate(46.1) scale(601.5)">
       <stop stop-color="#FB6B47" stop-opacity="0.30"/>
       <stop offset="0.42" stop-color="#F4BA4D" stop-opacity="0.18"/>
@@ -66,14 +36,13 @@ const markSvg = `
   <circle cx="742" cy="336" r="18" fill="#FB6B47"/>
   <circle cx="320" cy="770" r="12" fill="#194E45"/>
   <circle cx="742" cy="336" r="38" stroke="#19161A" stroke-opacity="0.10" stroke-width="2"/>
-  <text x="512" y="874" text-anchor="middle" fill="#19161A" fill-opacity="0.56" font-family="BrandMono, monospace" font-size="46" letter-spacing="10">MUSE SPARK</text>
+  <text x="512" y="874" text-anchor="middle" fill="#19161A" fill-opacity="0.56" font-family="${monoFontStack}" font-size="46" letter-spacing="10">MUSE SPARK</text>
 </svg>
 `;
 
 const logoSvg = `
 <svg width="1600" height="520" viewBox="0 0 1600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    ${fontStyle}
     <radialGradient id="paperGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(225 140) rotate(41.7) scale(510.6 337.1)">
       <stop stop-color="#FB6B47" stop-opacity="0.26"/>
       <stop offset="0.48" stop-color="#F4BA4D" stop-opacity="0.18"/>
@@ -89,9 +58,9 @@ const logoSvg = `
   <path d="M222 208L234 249L276 237L246 267L288 289L242 294L248 337L222 301L196 337L202 294L156 289L198 267L168 237L210 249L222 208Z" fill="#F4BA4D"/>
   <circle cx="318" cy="182" r="10" fill="#FB6B47"/>
   <circle cx="132" cy="354" r="8" fill="#194E45"/>
-  <text x="392" y="232" fill="#19161A" font-family="BrandDisplay, sans-serif" font-size="152" letter-spacing="-10">MUSE</text>
-  <text x="392" y="358" fill="#FB6B47" font-family="BrandDisplay, sans-serif" font-size="152" letter-spacing="-10">SPARK</text>
-  <text x="398" y="425" fill="#19161A" fill-opacity="0.58" font-family="BrandMono, monospace" font-size="30" letter-spacing="9">CREATIVE SIGNAL STUDIO</text>
+  <text x="392" y="232" fill="#19161A" font-family="${displayFontStack}" font-size="152" font-weight="700" letter-spacing="-10">MUSE</text>
+  <text x="392" y="358" fill="#FB6B47" font-family="${displayFontStack}" font-size="152" font-weight="700" letter-spacing="-10">SPARK</text>
+  <text x="398" y="425" fill="#19161A" fill-opacity="0.58" font-family="${monoFontStack}" font-size="30" letter-spacing="9">CREATIVE SIGNAL STUDIO</text>
 </svg>
 `;
 
